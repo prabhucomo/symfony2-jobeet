@@ -1,0 +1,197 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+
+    # Sonata Bundles
+#    - { resource: sonata/sonata_admin.yml }
+    - { resource: sonata/sonata_page.yml }
+    - { resource: sonata/sonata_block.yml }
+    - { resource: sonata/sonata_media.yml }
+#    - { resource: sonata/sonata_formatter.yml }
+#    - { resource: sonata/sonata_news.yml }
+    - { resource: sonata/sonata_cache.yml }
+    - { resource: sonata/sonata_seo.yml }
+#    - { resource: sonata/sonata_notification.yml }
+#    - { resource: sonata/sonata_user.yml }
+#    - { resource: sonata/sonata_intl.yml }
+    
+#    - { resource: '@ApplicationSonataPageBundle/Resources/config/services.yml' }    
+#    - { resource: '@ApplicationSonataUserBundle/Resources/config/services.yml' }
+#    - { resource: '@ApplicationSonataMediaBundle/Resources/config/services.yml' }
+#    - { resource: '@TNEOperatorBundle/Resources/config/services.yml' }
+#    - { resource: '@TNEOperatorBundle/Resources/config/services.xml' }
+    
+#    - { resource: '@ApplicationSonataPageBundle/Resources/config/tag.xml' }
+#    - { resource: '@TNEOperatorBundle/Resources/config/accommodation.xml' }    
+#    - { resource: '@TNEOperatorBundle/Resources/config/map.xml' }
+#    - { resource: '@TNEOperatorBundle/Resources/config/annotations.xml' }
+
+framework:
+    #esi:             ~
+    #translator:      { fallback: %locale% }
+    secret:          %secret%
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: %kernel.debug%
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+        #assets_version: SomeVersionScheme
+    default_locale:  "%locale%"
+    trusted_proxies: ~
+    session:         ~
+    fragments:       ~
+
+# Twig Configuration
+twig:
+    debug:            %kernel.debug%
+    strict_variables: %kernel.debug%
+
+# Assetic Configuration
+assetic:
+    debug:          %kernel.debug%
+    use_controller: false
+    bundles:        [ ]
+    #java: /usr/bin/java
+    filters:
+        cssrewrite: ~
+        #closure:
+        #    jar: %kernel.root_dir%/Resources/java/compiler.jar
+        #yui_css:
+        #    jar: %kernel.root_dir%/Resources/java/yuicompressor-2.4.7.jar
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   %database_driver%
+        host:     %database_host%
+        port:     %database_port%
+        dbname:   %database_name%
+        user:     %database_user%
+        password: %database_password%
+        charset:  UTF8
+        types:
+            json: Sonata\Doctrine\Types\JsonType
+        # if using pdo_sqlite as your database driver, add the path in parameters.yml
+        # e.g. database_path: %kernel.root_dir%/data/data.db3
+        # path:     %database_path%
+
+    orm:
+        entity_managers:
+            default:
+                mappings:
+                    EnsJobeetBundle: ~
+                    SonataMediaBundle: ~
+                    ApplicationSonataMediaBundle: ~
+                    ApplicationSonataPageBundle: ~
+                    SonataPageBundle: ~
+        auto_generate_proxy_classes: %kernel.debug%
+        #auto_mapping: true
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: %mailer_transport%
+    host:      %mailer_host%
+    username:  %mailer_user%
+    password:  %mailer_password%
+    spool:     { type: memory }
+    
+parameters:
+    max_jobs_on_homepage: 10
+    max_jobs_on_category: 20
+    
+sonata_admin:
+    title: Jobeet Admin
+ 
+sonata_block:
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+ 
+        sonata.block.service.text:
+        sonata.block.service.action:
+        sonata.block.service.rss:
+                
+sonata_media:
+    default_context: default
+    db_driver: doctrine_orm # or doctrine_mongodb, doctrine_phpcr
+    contexts:
+        default:  # the default context is mandatory
+            download:
+                strategy: sonata.media.security.superadmin_strategy
+                mode: http
+            providers:
+                - sonata.media.provider.dailymotion
+                - sonata.media.provider.youtube
+                - sonata.media.provider.image
+                - sonata.media.provider.file
+
+            formats:
+                small: { width: 100 , quality: 70}
+                big:   { width: 500 , quality: 70}
+
+    cdn:
+        server:
+            path: /uploads/media # http://media.sonata-project.org/
+
+    filesystem:
+        local:
+            directory:  %kernel.root_dir%/../web/uploads/media
+            create:     false
+            
+    providers:
+        image:
+            resizer: sonata.media.resizer.square
+            
+sonata_page:
+    multisite:             host
+    use_streamed_response: false # set the value to false in debug mode or if the reverse proxy does not handle streamed response
+    ignore_route_patterns:
+        - (.*)admin(.*)     # ignore admin route, ie route containing 'admin'
+        - ^_(.*)            # ignore symfony routes
+
+    ignore_routes:
+        - sonata_page_esi_cache
+        - sonata_page_ssi_cache
+        - sonata_page_js_sync_cache
+        - sonata_page_js_async_cache
+        - sonata_cache_esi
+        - sonata_cache_ssi
+        - sonata_cache_js_async
+        - sonata_cache_js_sync
+        - sonata_cache_apc
+
+    ignore_uri_patterns:
+        - admin(.*)         # ignore admin route, ie route containing 'admin'
+
+#    cache_invalidation:
+#        service:  sonata.page.cache.invalidation.simple
+#        recorder: sonata.page.cache.recorder
+#        classes:
+#            "Application\Sonata\PageBundle\Entity\Block": getId
+
+    default_template: default
+    templates:
+        default: { path: 'ApplicationSonataPageBundle::layout.html.twig', name: 'default' }
+#        home: { path: 'ApplicationSonataPageBundle::home_layout.html.twig', name: 'home' }
+#        gallery: { path: 'ApplicationSonataPageBundle::gallery_layout.html.twig', name: 'gallery' }
+#        map: { path: 'ApplicationSonataPageBundle::layout_map.html.twig', name: 'map' }
+
+    page_defaults:
+        homepage: {decorate: true, enabled: true}
+
+    caches:
+        esi:
+            token:    add an unique token here # default is a random value
+            servers:
+                - varnishadm -T 127.0.0.1:2000 {{ COMMAND }} "{{ EXPRESSION }}"
+
+        ssi:
+            token:    add an unique token here # default is a random value
+
+    catch_exceptions:
+        not_found: [404]    # render 404 page with "not_found" key (name generated: _page_internal_error_{key})
+        fatal:     [500]    # so you can use the same page for different http errors or specify specific page for each error

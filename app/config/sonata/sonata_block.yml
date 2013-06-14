@@ -1,0 +1,22 @@
+sonata_block:
+    context_manager: sonata.page.block.context_manager
+    default_contexts: [cms]
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts:   [admin]
+#    profiler:
+#        enabled:        %kernel.debug%
+#        renderer_class: Sonata\BlockBundle\Block\TraceableBlockRenderer
+#        template:       SonataBlockBundle:Profiler:block.html.twig
+
+#        sonata.admin_doctrine_orm.block.audit:
+#            contexts:   [admin]
+
+        sonata.block.service.text:
+        sonata.page.block.container:
+        sonata.page.block.children_pages:
+        sonata.block.service.rss:
+        sonata.media.block.media:
+        sonata.media.block.gallery:
+        sonata.media.block.feature_media:
+        sonata.block.service.taggedmedia:
